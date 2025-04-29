@@ -24,17 +24,22 @@ public class MapleSimSwerve implements SwerveDrive{
     private final Field2d field2d;
 
     private StructPublisher<Pose2d> robotPose;
+    private StructPublisher<Pose2d> actualPose;
     public MapleSimSwerve(){
         final DriveTrainSimulationConfig config = 
         DriveTrainSimulationConfig.Default();
 
         simulatedDrive = new SelfControlledSwerveDriveSimulation(
-            new SwerveDriveSimulation(config, new Pose2d(0,0,new Rotation2d())));
+            new SwerveDriveSimulation(config, new Pose2d(1.27,1.27,new Rotation2d())));
         
         SimulatedArena.getInstance().addDriveTrainSimulation(simulatedDrive.getDriveTrainSimulation());
 
         field2d = new Field2d();
         SmartDashboard.putData("Sim field",field2d);
+
+        actualPose = NetworkTableInstance.getDefault()
+      .getStructTopic("ActualPose", Pose2d.struct)
+      .publish();
 
         robotPose = NetworkTableInstance.getDefault()
       .getStructTopic("RobotPose", Pose2d.struct)
@@ -82,6 +87,7 @@ public class MapleSimSwerve implements SwerveDrive{
 
         field2d.setRobotPose(simulatedDrive.getActualPoseInSimulationWorld());
         field2d.getObject("odometry").setPose(getPose());
+        actualPose.accept(simulatedDrive.getActualPoseInSimulationWorld());
         robotPose.accept(getPose());
     }
 }

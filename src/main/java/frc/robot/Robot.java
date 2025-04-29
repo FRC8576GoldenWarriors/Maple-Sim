@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.Arena2025Reefscape;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeReefSimulation;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -37,6 +39,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     SimulatedArena.getInstance();
+    SimulatedArena.overrideInstance(new Arena2025Reefscape());
+
+
     SimulatedArena.getInstance().addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
     notePoses = NetworkTableInstance.getDefault()
       .getStructArrayTopic("MyPoseArray", Pose3d.struct)
