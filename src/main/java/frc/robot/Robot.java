@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.Arena2025Reefscape;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnField;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeReefSimulation;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -17,7 +19,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -35,17 +39,27 @@ public class Robot extends LoggedRobot {
 
   
   private RobotContainer m_robotContainer;
-  private StructArrayPublisher<Pose3d> notePoses;
+  private StructArrayPublisher<Pose3d> coralPoses;
+  private StructArrayPublisher<Pose3d> algaePoses;
   @Override
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
 
 
-    SimulatedArena.getInstance().addGamePiece(new CrescendoNoteOnField(new Translation2d(3, 3)));
-    notePoses = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("MyPoseArray", Pose3d.struct)
+    SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
+    // We must specify a heading since the coral is a tube
+    new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
+coralPoses = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Coral_Poses", Pose3d.struct)
       .publish();
+
+      algaePoses = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Algae_Poses", Pose3d.struct)
+      .publish();
+
+      SimulatedArena.getInstance().resetFieldForAuto();
+      SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
 
    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
@@ -76,12 +90,19 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic(){
     SimulatedArena.getInstance().simulationPeriodic();
-    //   // Get the positions of the notes (both on the field and in the air)
-      Pose3d[] notesPoses = SimulatedArena.getInstance()
-      .getGamePiecesArrayByType("Note");
-    notePoses.accept(SimulatedArena.getInstance()
-      .getGamePiecesByType("Note")
-      .toArray(new Pose3d[10]));
+//     //   // Get the positions of the notes (both on the field and in the air)
+//     Pose3d[] notesPoses = SimulatedArena.getInstance()
+//     .getGamePiecesArrayByType("Note");
+// // Publish to telemetry using AdvantageKit
+// Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
+Pose3d[] coralsPoses = SimulatedArena.getInstance()
+            .getGamePiecesArrayByType("Coral");
+      coralPoses.accept(coralsPoses);
+
+Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
+      algaePoses.accept(algaesPoses);
+
+
   }
 
   @Override

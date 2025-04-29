@@ -2,13 +2,13 @@ package frc.robot.Commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.SwerveDrive;
+import frc.robot.Subsystems.MapleSimSwerve;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class Drive extends Command {
-    private final SwerveDrive drive = RobotContainer.simSwerve;
+    private final MapleSimSwerve drive = RobotContainer.simSwerve;
 
     public Drive(){
         addRequirements(drive);
