@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.Drive;
 import frc.robot.Subsystems.MapleSimSwerve;
+import frc.robot.Subsystems.SimField;
 // import frc.robot.Subsystems.SimField;
 import frc.robot.Subsystems.SimIntake;
 
@@ -23,7 +24,7 @@ public class RobotContainer {
   public static CommandXboxController driverController = new CommandXboxController(0);
   public static MapleSimSwerve simSwerve = new MapleSimSwerve();
   public static SimIntake intake = new SimIntake(simSwerve.getDriveTrain());
-  // public static SimField field = new SimField();
+  public static SimField field = new SimField();
   
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);

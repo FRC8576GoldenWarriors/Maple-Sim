@@ -39,27 +39,27 @@ public class Robot extends LoggedRobot {
 
   
   private RobotContainer m_robotContainer;
-  private StructArrayPublisher<Pose3d> coralPoses;
-  private StructArrayPublisher<Pose3d> algaePoses;
+  // private StructArrayPublisher<Pose3d> coralPoses;
+  // private StructArrayPublisher<Pose3d> algaePoses;
   @Override
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
     
 
-    SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
-    // We must specify a heading since the coral is a tube
-    new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
-coralPoses = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("Coral_Poses", Pose3d.struct)
-      .publish();
+    // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
+    // // We must specify a heading since the coral is a tube
+    // new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
+// coralPoses = NetworkTableInstance.getDefault()
+//       .getStructArrayTopic("Coral_Poses", Pose3d.struct)
+//       .publish();
 
-      algaePoses = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("Algae_Poses", Pose3d.struct)
-      .publish();
+//       algaePoses = NetworkTableInstance.getDefault()
+//       .getStructArrayTopic("Algae_Poses", Pose3d.struct)
+//       .publish();
 
-      SimulatedArena.getInstance().resetFieldForAuto();
-      SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
+//       SimulatedArena.getInstance().resetFieldForAuto();
+//       SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
 
    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
@@ -95,12 +95,12 @@ coralPoses = NetworkTableInstance.getDefault()
 //     .getGamePiecesArrayByType("Note");
 // // Publish to telemetry using AdvantageKit
 // Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
-Pose3d[] coralsPoses = SimulatedArena.getInstance()
-            .getGamePiecesArrayByType("Coral");
-      coralPoses.accept(coralsPoses);
+// Pose3d[] coralsPoses = SimulatedArena.getInstance()
+//             .getGamePiecesArrayByType("Coral");
+//       coralPoses.accept(coralsPoses);
 
-Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
-      algaePoses.accept(algaesPoses);
+// Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
+//       algaePoses.accept(algaesPoses);
 
 
   }

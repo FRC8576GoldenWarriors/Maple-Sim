@@ -1,54 +1,52 @@
-// package frc.robot.Subsystems;
+package frc.robot.Subsystems;
 
-// import org.ironmaple.simulation.SimulatedArena;
-// import org.ironmaple.simulation.seasonspecific.reefscape2025.Arena2025Reefscape;
-// import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
-// import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnField;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.Arena2025Reefscape;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralOnField;
 
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Pose3d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.networktables.NetworkTableInstance;
-// import edu.wpi.first.networktables.StructArrayPublisher;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// public class SimField extends SubsystemBase{
-//     private StructArrayPublisher<Pose3d> coralPoses;
-//   private StructArrayPublisher<Pose3d> algaePoses;
-//     public SimField(){
-//         SimulatedArena.getInstance();
-//     SimulatedArena.overrideInstance(new Arena2025Reefscape());
-    
+public class SimField extends SubsystemBase{
+    private StructArrayPublisher<Pose3d> coralPoses;
+  private StructArrayPublisher<Pose3d> algaePoses;
+    public SimField(){
+        
 
-//     SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
-//     // We must specify a heading since the coral is a tube
-//     new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
-// coralPoses = NetworkTableInstance.getDefault()
-//       .getStructArrayTopic("Coral_Poses", Pose3d.struct)
-//       .publish();
+    SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
+    // We must specify a heading since the coral is a tube
+    new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
+coralPoses = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Coral_Poses", Pose3d.struct)
+      .publish();
 
-//       algaePoses = NetworkTableInstance.getDefault()
-//       .getStructArrayTopic("Algae_Poses", Pose3d.struct)
-//       .publish();
+      algaePoses = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Algae_Poses", Pose3d.struct)
+      .publish();
 
-//       SimulatedArena.getInstance().resetFieldForAuto();
-//       SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
+      SimulatedArena.getInstance().resetFieldForAuto();
+      SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
 
-//     }
+    }
 
-//     public void simulationPeriodic(){
-//         SimulatedArena.getInstance().simulationPeriodic();
-// //     //   // Get the positions of the notes (both on the field and in the air)
-// //     Pose3d[] notesPoses = SimulatedArena.getInstance()
-// //     .getGamePiecesArrayByType("Note");
-// // // Publish to telemetry using AdvantageKit
-// // Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
-// Pose3d[] coralsPoses = SimulatedArena.getInstance()
-//             .getGamePiecesArrayByType("Coral");
-//       coralPoses.accept(coralsPoses);
+    public void periodic(){
+        SimulatedArena.getInstance().simulationPeriodic();
+//     //   // Get the positions of the notes (both on the field and in the air)
+//     Pose3d[] notesPoses = SimulatedArena.getInstance()
+//     .getGamePiecesArrayByType("Note");
+// // Publish to telemetry using AdvantageKit
+// Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
+Pose3d[] coralsPoses = SimulatedArena.getInstance()
+            .getGamePiecesArrayByType("Coral");
+      coralPoses.accept(coralsPoses);
 
-// Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
-//       algaePoses.accept(algaesPoses);
-//     }
-// }
+Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
+      algaePoses.accept(algaesPoses);
+    }
+}
