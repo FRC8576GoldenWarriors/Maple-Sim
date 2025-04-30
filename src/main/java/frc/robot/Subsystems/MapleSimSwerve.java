@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import java.lang.reflect.Field;
 
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -89,5 +90,9 @@ public class MapleSimSwerve implements SwerveDrive{
         field2d.getObject("odometry").setPose(getPose());
         actualPose.accept(simulatedDrive.getActualPoseInSimulationWorld());
         robotPose.accept(getPose());
+    }
+
+    public AbstractDriveTrainSimulation getDriveTrain(){
+        return simulatedDrive.getDriveTrainSimulation();
     }
 }

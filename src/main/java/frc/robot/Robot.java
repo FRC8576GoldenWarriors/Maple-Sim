@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
-
+    
 
     SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
     // We must specify a heading since the coral is a tube
