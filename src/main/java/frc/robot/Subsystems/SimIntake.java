@@ -1,12 +1,9 @@
 package frc.robot.Subsystems;
 
-import static edu.wpi.first.units.Units.Meters;
-
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Rectangle;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SimIntake implements IntakeIO {
@@ -26,9 +23,17 @@ public class SimIntake implements IntakeIO {
     }
     }
 
+    public int getGamePiecesAmount(){
+        return intake.getGamePiecesAmount();
+    }
+    public void decreaseIntakeCount(){
+        if(getGamePiecesAmount()>=1)
+        intake.setGamePiecesCount(0);
+    }
+
     @Override
     public boolean isAlgaeInsideIntake(){
-        return intake.getGamePiecesAmount()>0;
+        return getGamePiecesAmount()>0;
     }
   
     public void periodic(){

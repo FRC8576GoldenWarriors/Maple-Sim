@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import org.ironmaple.simulation.IntakeSimulation.GamePieceContactListener;
-import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.Drive;
 import frc.robot.Subsystems.MapleSimSwerve;
 import frc.robot.Subsystems.SimField;
-// import frc.robot.Subsystems.SimField;
 import frc.robot.Subsystems.SimIntake;
+import frc.robot.Subsystems.SimShooter;
 
 public class RobotContainer {
 
@@ -25,6 +22,7 @@ public class RobotContainer {
   public static MapleSimSwerve simSwerve = new MapleSimSwerve();
   public static SimIntake intake = new SimIntake(simSwerve.getDriveTrain());
   public static SimField field = new SimField();
+  public static SimShooter shooter = new SimShooter(intake, simSwerve);
   
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);
@@ -39,7 +37,12 @@ public class RobotContainer {
 
     driverController.a().whileTrue(new InstantCommand(()->intake.setRunning(true)));
     driverController.x().whileTrue(new InstantCommand(()->intake.setRunning(false)));
+    driverController.b().onTrue(new InstantCommand(() -> shooter.shootAlgae()));
+    driverController.rightBumper().onTrue(new InstantCommand(() -> shooter.shootProcessor()));
+    
   }
+
+  
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

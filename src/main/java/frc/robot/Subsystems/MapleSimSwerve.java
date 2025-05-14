@@ -1,7 +1,5 @@
 package frc.robot.Subsystems;
 
-import java.lang.reflect.Field;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
@@ -9,13 +7,11 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,6 +67,9 @@ public class MapleSimSwerve implements SwerveDrive{
         return simulatedDrive.getRawGyroAngle();
     }
 
+    public double getGyroDegrees(){
+        return simulatedDrive.getRawGyroAngle().getDegrees();
+    }
     @Override
     public Pose2d getPose(){
         return simulatedDrive.getOdometryEstimatedPose();
