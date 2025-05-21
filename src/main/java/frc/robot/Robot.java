@@ -140,7 +140,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    System.out.println(m_robotContainer.intake.getGamePiecesAmount());
+    //System.out.println(m_robotContainer.intake.getGamePiecesAmount());
   }
 
   @Override

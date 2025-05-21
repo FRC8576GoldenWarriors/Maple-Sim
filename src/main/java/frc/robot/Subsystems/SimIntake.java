@@ -14,21 +14,23 @@ public class SimIntake implements IntakeIO {
     }
 
     @Override
-    public void setRunning(boolean isRunning){
-        if(isRunning)
-        intake.startIntake();
-        else{
-        intake.stopIntake();
-        intake.setGamePiecesCount(0);
-    }
+    public void setRunning(boolean isRunning) {
+        if (isRunning){
+            intake.startIntake();
+        } else {
+            intake.stopIntake();
+            intake.setGamePiecesCount(0);
+        }
     }
 
     public int getGamePiecesAmount(){
         return intake.getGamePiecesAmount();
     }
+
     public void decreaseIntakeCount(){
-        if(getGamePiecesAmount()>=1)
-        intake.setGamePiecesCount(0);
+        if(getGamePiecesAmount()>=1){
+            intake.setGamePiecesCount(0);
+        }
     }
 
     @Override

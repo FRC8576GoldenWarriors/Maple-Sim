@@ -2,7 +2,9 @@ package frc.robot.Subsystems;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
+import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Meters;
@@ -16,20 +18,20 @@ public class SimShooter implements ShooterIO {
     SimIntake intake;
     MapleSimSwerve driveSimulation;
 
+
     public SimShooter(SimIntake Intake, MapleSimSwerve driveSimulation) {
         this.intake = Intake;
         this.driveSimulation = driveSimulation;
     }
 
     @Override
-    public void setRunning(boolean isRunning) {
+    public void setRunning(boolean isRunning){}
 
-    }
+    
 
     public void shootAlgae() {
         if (intake.getGamePiecesAmount() == 1) {
-            ReefscapeAlgaeOnFly.setHitNetCallBack(
-                    () -> System.out.println("ALGAE hits NET!  Algae Count: " + intake.getGamePiecesAmount()));
+            ReefscapeAlgaeOnFly.setHitNetCallBack(() -> System.out.println("ALGAE hits NET! "));
             SimulatedArena.getInstance()
                     .addGamePieceProjectile(new ReefscapeAlgaeOnFly(
                             driveSimulation.getPose().getTranslation(),
@@ -38,15 +40,18 @@ public class SimShooter implements ShooterIO {
                             driveSimulation.getGyroYaw(),
                             Distance.ofBaseUnits(0.4, Meters), // initial height of the ball, in meters
                             LinearVelocity.ofBaseUnits(9.0, MetersPerSecond), // initial velocity, in m/s
-                            Angle.ofBaseUnits(70, Degree))); // shooter angle
+                            Angle.ofBaseUnits(70, Degree)).withProjectileTrajectoryDisplayCallBack(
+                                (poses) -> Logger.recordOutput("GoodShotTrajectory", poses.toArray(Pose3d[]::new)),
+                                (poses) -> Logger.recordOutput("BadShotTrajectory", poses.toArray(Pose3d[]::new))));
             intake.decreaseIntakeCount();
+            
         }
     }
 
       public void shootProcessor() {
         if (intake.getGamePiecesAmount() == 1) {
             ReefscapeAlgaeOnFly.setHitNetCallBack(
-                    () -> System.out.println("ALGAE hits NET!  Algae Count: " + intake.getGamePiecesAmount()));
+                    () -> System.out.println("ALGAE hits PROCESSOR!  Algae Count: " + intake.getGamePiecesAmount()));
             SimulatedArena.getInstance()
                     .addGamePieceProjectile(new ReefscapeAlgaeOnFly(
                             driveSimulation.getPose().getTranslation(),
@@ -58,22 +63,6 @@ public class SimShooter implements ShooterIO {
                             Angle.ofBaseUnits(180, Degree))); // shooter angle
             intake.decreaseIntakeCount();
         }
-        
-        
-    // intake.decreaseIntakeCount();
-        // .withProjectileTrajectoryDisplayCallBack(
-        // (poses) -> Logger.recordOutput("successfulShotsTrajectory",
-        // poses.toArray(Pose3d[]::new)),
-        // (poses) -> Logger.recordOutput("missedShotsTrajectory",
-        // poses.toArray(Pose3d[]::new))));
-
-        // Translation2d robotPosition,
-        // Translation2d shooterPositionOnRobot,
-        // ChassisSpeeds chassisSpeeds,
-        // Rotation2d shooterFacing,
-        // Distance initialHeight,
-        // LinearVelocity launchingSpeed,
-        // Angle shooterAngle
     }
 
     @Override
@@ -83,7 +72,7 @@ public class SimShooter implements ShooterIO {
 
     @Override
     public void periodic(){
-        System.out.println("Algae Count: "+intake.getGamePiecesAmount());
+        //algaePoses = field.getAlgaePoses();
     }
 
 }
