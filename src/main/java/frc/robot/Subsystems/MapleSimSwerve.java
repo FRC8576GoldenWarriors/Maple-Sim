@@ -75,6 +75,10 @@ public class MapleSimSwerve implements SwerveDrive{
         return simulatedDrive.getOdometryEstimatedPose();
     }
 
+    public Pose2d getFieldPose(){
+        return simulatedDrive.getActualPoseInSimulationWorld();
+    }
+
     @Override 
     public void setPose(Pose2d pose){
         simulatedDrive.setSimulationWorldPose(pose);

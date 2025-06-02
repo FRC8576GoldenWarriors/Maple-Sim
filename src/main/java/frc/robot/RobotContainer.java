@@ -37,7 +37,7 @@ public class RobotContainer {
 
     driverController.a().whileTrue(new InstantCommand(()->intake.setRunning(true)));
     driverController.x().whileTrue(new InstantCommand(()->intake.setRunning(false)));
-    driverController.b().onTrue(new InstantCommand(() -> shooter.shootAlgae()));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> shooter.shootAlgae()));
     driverController.rightBumper().onTrue(new InstantCommand(() -> shooter.shootProcessor()));
     
   }
