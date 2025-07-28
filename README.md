@@ -3,7 +3,7 @@
 # Importing our robot CAD into Advantage Scope
 
 1. Go to this link and download the folder
-    * [Goldfish CAD files](https://drive.google.com/drive/folders/1WgWm5Z5JSJXoqrhH7jxXDNQZ4EcsYzHy?usp=drive_link)
+    * [Goldfish CAD files](https://drive.google.com/drive/folders/18vwYz1Dc-UzC3dAGXm8tkJ1AO0oKIW24?usp=drive_link)
     * Download `Robot_Goldfish`
 2. Open Advantage Scope > Help > Show Assets Folder
 3. Drag and drop `Robot_Goldfish` into the User Assets folder
