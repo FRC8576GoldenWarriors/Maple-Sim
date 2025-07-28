@@ -13,11 +13,25 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -26,37 +40,26 @@ public class Robot extends LoggedRobot {
 
   
   private RobotContainer m_robotContainer;
-  // private StructArrayPublisher<Pose3d> coralPoses;
-  // private StructArrayPublisher<Pose3d> algaePoses;
+  private Mechanism2d superStructureMechanism = new Mechanism2d(3, 3);
+  private MechanismRoot2d superStructureRootMechanism = superStructureMechanism.getRoot("Base", 2, 0);
+
+  private MechanismLigament2d superStructure;
+  private MechanismLigament2d endEffector;
+
+
+  private StructArrayPublisher<Pose3d> zeroedComponenetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("ZeroedComponentPoses", Pose3d.struct).publish();
+  private StructArrayPublisher<Pose3d> finalComponentPoses = NetworkTableInstance.getDefault().getStructArrayTopic("FinalComponentPoses", Pose3d.struct).publish();
+  
+
   @Override
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
-    
 
-    // SimulatedArena.getInstance().addGamePiece(new ReefscapeCoralOnField(
-    // // We must specify a heading since the coral is a tube
-    // new Pose2d(2, 2, Rotation2d.fromDegrees(90))));
-// coralPoses = NetworkTableInstance.getDefault()
-//       .getStructArrayTopic("Coral_Poses", Pose3d.struct)
-//       .publish();
-
-//       algaePoses = NetworkTableInstance.getDefault()
-//       .getStructArrayTopic("Algae_Poses", Pose3d.struct)
-//       .publish();
-
-//       SimulatedArena.getInstance().resetFieldForAuto();
-//       SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(2,2)));
 
    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
-    if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-
-      
-    }
+    
     // } else {
     //   setUseTiming(false); // Run as fast as possible
     //   String logPath =
@@ -71,42 +74,43 @@ public class Robot extends LoggedRobot {
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
     // be added.
 
+    superStructure = superStructureRootMechanism.append(new MechanismLigament2d("super structure", 1, 90, 5, new Color8Bit(Color.kOrange)));
+    endEffector = superStructure.append(new MechanismLigament2d("end effector", 1, 90, 6, new Color8Bit(Color.kPurple)));
+
+     
+
+    
+
+
     FollowPathCommand.warmupCommand().schedule();
     m_robotContainer = new RobotContainer();
+   
   }
   @Override
-  public void simulationPeriodic(){
-    SimulatedArena.getInstance().simulationPeriodic();
-//     //   // Get the positions of the notes (both on the field and in the air)
-//     Pose3d[] notesPoses = SimulatedArena.getInstance()
-//     .getGamePiecesArrayByType("Note");
-// // Publish to telemetry using AdvantageKit
-// Logger.recordOutput("FieldSimulation/NotesPositions", notesPoses);
-// Pose3d[] coralsPoses = SimulatedArena.getInstance()
-//             .getGamePiecesArrayByType("Coral");
-//       coralPoses.accept(coralsPoses);
+  public void simulationPeriodic(){ 
+   
 
-// Pose3d[] algaesPoses = SimulatedArena.getInstance().getGamePiecesArrayByType("Algae");
-//       algaePoses.accept(algaesPoses);
+    SimulatedArena.getInstance().simulationPeriodic();
 
 
   }
 
   @Override
   public void robotPeriodic() {
+    
+    zeroedComponenetPublisher.set(new Pose3d[] {new Pose3d()});
+    finalComponentPoses.set(new Pose3d[] {new Pose3d(0,0,0, new Rotation3d(0, Math.sin(Timer.getTimestamp()) - 1, 0))});
+
+    Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {new Pose3d()});
+    SmartDashboard.putData("Mech2d", superStructureMechanism);
+
     SmartDashboard.putNumber("Time", DriverStation.getMatchTime());
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     CommandScheduler.getInstance().run();
+
+   
+
   }
-
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
 
   @Override
   public void autonomousInit() {
@@ -123,12 +127,6 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void autonomousExit() {}
-
-  @Override
   public void teleopInit() {
 
     if (m_autonomousCommand != null) {
@@ -138,22 +136,8 @@ public class Robot extends LoggedRobot {
     // m_drivetrain.setAllIdleMode(true);
   }
 
-  @Override
-  public void teleopPeriodic() {
-    //System.out.println(m_robotContainer.intake.getGamePiecesAmount());
-  }
-
-  @Override
-  public void teleopExit() {}
-
-  @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
   }
 
-  @Override
-  public void testPeriodic() {}
-
-  @Override
-  public void testExit() {}
 }
