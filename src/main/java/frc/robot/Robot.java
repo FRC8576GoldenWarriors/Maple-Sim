@@ -12,6 +12,9 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -55,9 +58,12 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
+    
+    Pathfinding.setPathfinder(new LocalADStar());
+    PathfindingCommand.warmupCommand().schedule();
 
 
-   Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
+    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
     
     // } else {
