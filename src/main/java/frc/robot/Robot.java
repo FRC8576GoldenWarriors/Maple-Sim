@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -24,6 +26,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -44,62 +47,76 @@ public class Robot extends LoggedRobot {
   private MechanismRoot2d superStructureRootMechanism = superStructureMechanism.getRoot("Base", 2, 0);
 
   private MechanismLigament2d superStructure;
-  private MechanismLigament2d endEffector;
-
+  private SingleJointedArmSim simArm = new SingleJointedArmSim(
+    DCMotor.getNEO(1), 
+    25, 
+    SingleJointedArmSim.estimateMOI(.565, 4.082), 
+    .565, 
+    Units.degreesToRadians(-180), 
+    Units.degreesToRadians(250), 
+    true, 
+    0, 
+    (2.0 * Math.PI / 4096),
+    0.0  
+  );
+     
 
   private StructArrayPublisher<Pose3d> zeroedComponenetPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("ZeroedComponentPoses", Pose3d.struct).publish();
   private StructArrayPublisher<Pose3d> finalComponentPoses = NetworkTableInstance.getDefault().getStructArrayTopic("FinalComponentPoses", Pose3d.struct).publish();
+  private Pose3d updatedPose;
+
+  private MechanismLigament2d endEffectorLigament;
+  
+  private double angleRadians;
+  private double structurePositionX = 1.33;
+
+
+  private double superStructureLength = 0.8;
+
+
+  private double endEffectorLength = 0.5;
   
 
   @Override
   public void robotInit() {
     SimulatedArena.getInstance();
     SimulatedArena.overrideInstance(new Arena2025Reefscape());
-
-
-   Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
+    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
     
-    // } else {
-    //   setUseTiming(false); // Run as fast as possible
-    //   String logPath =
-    //       LogFileUtil
-    //           .findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-    //   Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-    //   Logger.addDataReceiver(
-    //       new WPILOGWriter(
-    //           LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-    // }
+    superStructure = superStructureRootMechanism.append(new MechanismLigament2d("super structure", superStructureLength, 90, 5, new Color8Bit(Color.kOrange)));
 
-    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
-    // be added.
+    angleRadians = Math.toRadians(90); 
 
-    superStructure = superStructureRootMechanism.append(new MechanismLigament2d("super structure", 1, 90, 5, new Color8Bit(Color.kOrange)));
-    endEffector = superStructure.append(new MechanismLigament2d("end effector", 1, 90, 6, new Color8Bit(Color.kPurple)));
-
-     
-
+    endEffectorLigament = superStructure.append(new MechanismLigament2d("EE", endEffectorLength, angleRadians, 6, new Color8Bit(Color.kBlue)));
+    endEffectorLigament.setAngle(angleRadians);
     
+    endEffectorLigament.setAngle(90);
+    superStructureRootMechanism.setPosition(structurePositionX, 0); // Set the root position to (0, 0)
+    zeroedComponenetPublisher.set(new Pose3d[] { updatedPose });
 
-
-    FollowPathCommand.warmupCommand().schedule();
     m_robotContainer = new RobotContainer();
-   
+    FollowPathCommand.warmupCommand().schedule();
   }
   @Override
   public void simulationPeriodic(){ 
    
 
     SimulatedArena.getInstance().simulationPeriodic();
-
+    
 
   }
 
   @Override
   public void robotPeriodic() {
+
+    //endEffectorLigament.setAngle(angleRadians + Math.sin(50 * Timer.getFPGATimestamp()) * 6); // Simulate some oscillation
+    //System.out.println(endEffectorLigament.getAngle());
+
     
-    zeroedComponenetPublisher.set(new Pose3d[] {new Pose3d()});
-    finalComponentPoses.set(new Pose3d[] {new Pose3d(0,0,0, new Rotation3d(0, Math.sin(Timer.getTimestamp()) - 1, 0))});
+  
+    zeroedComponenetPublisher.set(new Pose3d[] { updatedPose });
+
 
     Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {new Pose3d()});
     SmartDashboard.putData("Mech2d", superStructureMechanism);
