@@ -65,6 +65,7 @@ public class Robot extends LoggedRobot {
 
     Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
 
+    Logger.addDataReceiver(new NT4Publisher());
     
     // } else {
     //   setUseTiming(false); // Run as fast as possible
